@@ -311,3 +311,40 @@ lógica de negócios nessa camada para garantir que separamos as preocupações 
 camadas.
 
 Vamos ver agora como podemos testar esta aplicação em camadas.
+
+================================
+Testando o aplicativo em camadas
+
+Testaremos a camada de serviço focando apenas na lógica que verifica se o e-mail já existe e se as credenciais são
+válidas. A seguir está como seria um dos testes:
+
+@QuarkusTest
+public class UserServiceTest {
+ @Inject
+ UserService userService;
+ @Test
+ public void givenTheUserEmailAlreadyExistsAnExceptionIsThrown()
+  throws Exception {
+  var userDto = new UserDto("test@davivieira.dev",
+  "password");
+  userService.createAccount(userDto);
+  Assertions.assertThrows(
+  Exception.class,
+  ()-> userService.createAccount(userDto)
+  );
+  }
+  /** Code omitted **/
+ }
+
+O teste anterior verifica se uma exceção é lançada quando o endereço de e-mail já existe. Observe que, para
+que esse teste funcione, a camada de serviço depende da camada de dados, que requer um banco de dados
+para persistir os dados. Portanto, a lógica do sistema central, presente na camada de serviço, depende
+diretamente da camada de dados que é composta pela entidade ORM e classes de repositório. Como lidamos
+com dados externos determina o que podemos fazer na camada de serviço.
+
+Suponha que queremos evitar criar essa dependência, onde a lógica do sistema central depende e fica
+muito próxima do código de manipulação de dados. Nesse caso, a arquitetura hexagonal pode nos ajudar com um diferente
+arranjo onde a lógica do sistema central não depende de nada e fornece a flexibilidade para evoluir essa
+lógica central sem nenhuma preocupação sobre como os dados externos são manipulados. Vamos ver como
+isso pode ser feito refatorando nossa aplicação de arquitetura em camadas em uma hexagonal.
+

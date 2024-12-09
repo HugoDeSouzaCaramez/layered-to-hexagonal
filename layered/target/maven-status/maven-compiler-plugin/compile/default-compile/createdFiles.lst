@@ -1,0 +1,7 @@
+dev\hugodesouzacaramez\layered\service\dto\UserDto.class
+dev\hugodesouzacaramez\layered\App.class
+dev\hugodesouzacaramez\layered\service\UserService.class
+META-INF\panache-archive.marker
+dev\hugodesouzacaramez\layered\data\repository\UserRepository.class
+dev\hugodesouzacaramez\layered\api\UserEndpoint.class
+dev\hugodesouzacaramez\layered\data\entity\User.class

@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: dev.hugodesouzacaramez.layered.service.UserServiceTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 22.602 s - in dev.hugodesouzacaramez.layered.service.UserServiceTest
