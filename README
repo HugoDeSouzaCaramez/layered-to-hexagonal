@@ -1,4 +1,4 @@
-REFATORANDO UM SISTEMA BASEADO NA ARQUITETURA EM CAMADAS EM UM BASEADO NA ARQUITETURA HEXAGONAL
+REFATORANDO UM SISTEMA BASEADO NA ARQUITETURA EM CAMADAS (API) EM UM BASEADO NA ARQUITETURA HEXAGONAL
 
 mvn archetype:generate -D groupId=dev.hugodesouzacaramez -D artifactId=layered -D archetypeArtifactId=maven-archetype-quickstart -D interactiveMode=false
 
