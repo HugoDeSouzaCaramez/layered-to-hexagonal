@@ -259,5 +259,55 @@ Criar uma conta de usuário e validar as credenciais do usuário para login são
 de serviço. Ela faz isso confiando na camada de dados para obter dados do usuário do banco de dados.
 Agora precisamos expor uma API para permitir que os clientes enviem solicitações para nosso aplicativo.
 
+==========================================
+Implementando a camada API
 
+A última camada, a camada API, é onde implementamos endpoints REST para criação de usuários e
+solicitações de login de usuários:
 
+1. No pacote dev.davivieira.layered.api , iniciamos a implementação do
+Classe UserEndpoint:
+
+@Path("/user")
+public class UserEndpoint {
+ @Inject
+ UserService userService;
+ /** Code omitted **/
+}
+
+Injetamos UserService para acessar os métodos createAccount e login da
+camada de serviço.
+
+2. Primeiro definimos o endpoint do registro:
+
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
+@Path("/register")
+public String register(UserDto userDto) throws Excep
+ tion {
+ return userService.createAccount(userDto);
+}
+
+Essa é uma implementação de endpoint REST direta, recebendo um payload JSON
+mapeado para UserDto e retornando texto simples. UserDto é passado diretamente
+para o método createAccount da classe UserService na camada de serviço.
+
+3. Por fim, definimos o endpoint de login:
+
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
+@Path("/login")
+public String login(UserDto userDto) {
+ return userService.login(userDto);
+}
+
+Assim como fizemos no endpoint de registro anterior, aqui estamos simplesmente expondo o endpoint REST
+e passando o DTO diretamente para a camada de serviço.
+
+A camada API é responsável apenas por expor os endpoints REST e nada mais. Evitamos colocar qualquer
+lógica de negócios nessa camada para garantir que separamos as preocupações entre essa e as outras
+camadas.
+
+Vamos ver agora como podemos testar esta aplicação em camadas.
