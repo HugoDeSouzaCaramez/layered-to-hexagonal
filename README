@@ -1,0 +1,2 @@
+mvn archetype:generate -D groupId=dev.hugodesouzacaramez -D artifactId=layered -D archetypeArtifactId=maven-archetype-quickstart -D interactiveMode=false
+
