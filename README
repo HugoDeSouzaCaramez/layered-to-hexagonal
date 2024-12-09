@@ -265,7 +265,7 @@ Implementando a camada API
 A última camada, a camada API, é onde implementamos endpoints REST para criação de usuários e
 solicitações de login de usuários:
 
-1. No pacote dev.davivieira.layered.api , iniciamos a implementação do
+1. No pacote dev.hugodesouzacaramez.layered.api , iniciamos a implementação do
 Classe UserEndpoint:
 
 @Path("/user")
@@ -325,7 +325,7 @@ public class UserServiceTest {
  @Test
  public void givenTheUserEmailAlreadyExistsAnExceptionIsThrown()
   throws Exception {
-  var userDto = new UserDto("test@davivieira.dev",
+  var userDto = new UserDto("test@hugodesouzacaramez.dev",
   "password");
   userService.createAccount(userDto);
   Assertions.assertThrows(
