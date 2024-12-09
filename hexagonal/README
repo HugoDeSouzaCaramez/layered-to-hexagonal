@@ -262,4 +262,33 @@ arquitetura em camadas. A camada de serviço depende diretamente das classes de 
 
 Vamos ver agora como podemos testar a aplicação hexagonal.
 
+========================================
+Testando a aplicação hexagonal
+
+Como a lógica do sistema central é parte do hexágono Domain, podemos criar testes unitários para
+validar os comportamentos da entidade de domínio User . A seguir está a aparência de um desses testes unitários:
+
+@QuarkusTest
+public class UserServiceTest {
+@Test
+public void givenTheUserEmailAlreadyExistsAnException
+ IsThrown() {
+ var user = new User("test@davivieira.dev", "password");
+ var optionalUser = Optional.of(user);
+ Assertions.assertThrows(
+ Exception.class,
+ ()-> user.isEmailAlreadyUsed(optionalUser)
+ );
+}
+/** Code omitted **/
+}
+
+Na abordagem em camadas, tivemos que injetar uma classe de serviço e fornecer um banco de dados
+para testar se o e-mail já estava sendo usado. Na abordagem hexagonal, estamos testando a lógica diretamente do Usuário
+classe de entidade de domínio. Mover a lógica do sistema central da camada de serviço, na arquitetura
+em camadas, para o hexágono de domínio na arquitetura hexagonal forneceu a flexibilidade para
+executar testes mais restritos sem dependências de recursos externos.
+
+Com base em nossa implementação do mesmo aplicativo usando arquitetura em camadas e hexagonal,
+vamos avaliar os prós e contras de cada arquitetura.
 

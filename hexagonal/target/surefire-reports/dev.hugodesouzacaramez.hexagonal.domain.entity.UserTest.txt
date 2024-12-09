@@ -1,0 +1,4 @@
+-------------------------------------------------------------------------------
+Test set: dev.hugodesouzacaramez.hexagonal.domain.entity.UserTest
+-------------------------------------------------------------------------------
+Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 9.932 s - in dev.hugodesouzacaramez.hexagonal.domain.entity.UserTest

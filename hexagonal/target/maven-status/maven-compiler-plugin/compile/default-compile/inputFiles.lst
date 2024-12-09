@@ -1,0 +1,11 @@
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\application\usecases\UserAccessUseCase.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\output\repository\UserRepository.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\application\ports\output\UserAccessOutputPort.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\input\UserAccessInputAdapter.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\output\data\UserData.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\output\mappers\UserMapper.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\domain\entity\User.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\application\ports\input\UserAccessInputPort.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\App.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\input\dto\UserDto.java
+C:\Users\Hugo\Documents\GitHub\layered-to-hexagonal\hexagonal\src\main\java\dev\hugodesouzacaramez\hexagonal\framework\adapters\output\UserAccessOutputAdapter.java
