@@ -1,3 +1,6 @@
+mvn archetype:generate -D groupId=dev.hugodesouzacaramez.hexagonal -D artifactId=hexagonal -D archetypeArtifactId=maven-archetype-quickstart -D interactiveMode=false
+
+
 Refatorando uma aplicação de arquitetura em camadas
 em uma hexagonal
 
@@ -155,5 +158,108 @@ foram definidas sem especificar se os dados estão vindo de um banco de dados ou
 
 Essa abordagem de expressar, por meio de portas de saída, quais dados o sistema precisa sem expor
 como o sistema obterá esses dados é uma diferença significativa entre a arquitetura em camadas e a hexagonal.
+
+==========================================
+Implementando o Framework hexagon
+
+O hexágono do aplicativo orquestra dados externos com a lógica do sistema central do hexágono do domínio.
+Ainda assim, precisamos fornecer uma maneira de obter esses dados externos. Na abordagem de arquitetura em
+camadas, a camada de dados nos permitiu obter dados de um banco de dados, e a camada de API expôs endpoints
+REST. No hexágono do Framework, usamos adaptadores de entrada para fornecer os endpoints REST e
+adaptadores de saída para obter dados de um banco de dados. Vamos implementar:
+
+1. Começamos com a classe UserAccessInputAdapter:
+
+@Path("/user")
+public class UserAccessInputAdapter {
+ @Inject
+ UserAccessUseCase userAccessUseCase;
+ /** Code omitted **/
+}
+
+Injetamos UserAccessUseCase para acessar as operações disponíveis no hexágono Application.
+
+2. Na classe UserAccessInputAdapter , implementamos o método register:
+
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
+@Path("/register")
+public String register(UserDto userDto) throws Excep
+ tion {
+ return userAccessUseCase.createAccount(new
+ User(userDto.email(), userDto.password()));
+}
+
+Mapeamos UserDto diretamente para a classe de entidade de domínio User . Então, passamos para o
+método createAccount de UserAccessUseCase.
+
+3. Para finalizar a implementação do UserAccessInputAdapter , criamos o método login:
+
+@POST
+@Produces(MediaType.TEXT_PLAIN)
+@Consumes(MediaType.APPLICATION_JSON)
+@Path("/login")
+public String login(UserDto userDto) {
+ return userAccessUseCase.login(new
+ User(userDto.email(), userDto.password()));
+}
+
+Assim como fizemos no método register, mapeamos UserDto para a classe de entidade de domínio User e
+então o passamos para o método login.
+
+4. UserAccessOutputAdapter implementa UserAccessOutputPort:
+
+@ApplicationScoped
+public class UserAccessOutputAdapter implements
+ UserAccessOutputPort {
+ @Inject
+ UserRepository userRepository;
+ /** Code omitted **/
+}
+
+Ao injetar UserRepository, estamos efetivamente transformando esse adaptador de saída em um que
+lida com bancos de dados.
+
+5. Precisamos implementar o método findByEmail:
+
+@Override
+public Optional<User> findByEmail(String email) {
+ return UserMapper
+ .userDataToDomain(
+ userRepository.findByEmail(email));
+}
+
+Usamos UserRepository ao implementar findByEmail da interface UserAccessOutputPort .
+UserMapper é uma classe auxiliar para mapear a classe de entidade ORM chamada
+UserData para a classe de entidade de domínio User.
+
+6. Por fim, implementamos o método persist:
+
+@Transactional
+@Override
+public void persist(User user) {
+ var userData = UserMapper.userDomainToData(user);
+ userRepository.persist(userData);
+}
+
+Usamos novamente a classe auxiliar UserMapper para mapear a classe de entidade de domínio User
+para a classe de entidade ORM UserData . Isso é necessário porque não podemos persistir a
+entidade de domínio. Então, passamos a classe de entidade ORM UserData para o método persist do UserRepository.
+
+A introdução do Framework hexagon permite que os clientes acessem a API do sistema fornecida
+por adaptadores de entrada e conectem o aplicativo hexagonal a uma fonte de dados externa, um
+banco de dados em nosso caso. O adaptador de entrada do Framework hexagon não difere muito
+quando comparado aos endpoints REST fornecidos pela camada de API. Ambas as abordagens
+expõem métodos semelhantes, dependem de classes DTO para mapear solicitações de clientes
+e enviá-las para a camada de serviço ou para o Application hexagon.
+
+O que muda significativamente é como os dados externos são manipulados. Na abordagem
+hexagonal, o adaptador de saída implementa uma porta de saída, que fornece flexibilidade com
+a abstração da porta de saída. Um novo adaptador de saída pode ser implementado sem
+interromper a lógica do sistema central . Por outro lado, não há tal abstração na abordagem de
+arquitetura em camadas. A camada de serviço depende diretamente das classes de repositório da camada de dados.
+
+Vamos ver agora como podemos testar a aplicação hexagonal.
 
 
