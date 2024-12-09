@@ -82,4 +82,78 @@ public String login(Optional<User> optionalUser) {
  Em contraste, na abordagem de arquitetura em camadas, a camada de serviço que contém a lógica do
  sistema central depende da camada de dados.
 
- 
+ =======================================
+ Implementando o hexágono do aplicativo
+
+ Implementamos a classe de entidade de domínio User no hexágono Domain contendo lógica central para
+ manipular o registro e login do usuário. Precisamos definir como, de forma agnóstica, os
+ comportamentos serão acionados e como os dados externos serão recuperados. Por agnóstico, quero
+ dizer expressar a necessidade de dados externos sem entrar nos detalhes da tecnologia para fornecer
+ tais dados. Empregamos casos de uso e portas de entrada e saída no hexágono Application:
+
+ 1. Vamos começar definindo a interface UserAccessUserCase:
+
+ public interface UserAccessUseCase {
+  String createAccount(User user) throws Exception;
+  String login(User user);
+ }
+
+Criar uma conta e poder efetuar login são os dois casos de uso suportados pelo nosso aplicativo.
+
+2. Para permitir o manuseio de dados externos, definimos a interface UserAccessOutputPort:
+
+public interface UserAccessOutputPort {
+ Optional<User> findByEmail(String email);
+ void persist(User user);
+}
+
+Esta interface é apenas um POJO contendo as definições dos métodos findByEmail e persist .
+UserAccessInputPort implementa a interface UserAccessUseCase . Observe que estamos
+injetando UserAccessOutputPort. É por meio dessa porta de saída que a porta de entrada
+manipulará dados externos. O método createAccount verifica se o e-mail já existe, confiando
+na lógica fornecida pelo método isEmailAlreadyUsed do User
+Na abordagem de arquitetura em camadas, tínhamos esses métodos como parte da classe de
+repositório na camada de dados. Na classe de repositório, estava implícito que os dados viriam de um banco de dados.
+Na abordagem hexagonal, expressamos, por meio da interface da porta de saída, que os dados
+podem vir de qualquer lugar.
+
+3. Finalizamos implementando a classe UserAccessInputPort:
+
+@ApplicationScoped
+public class UserAccessInputPort implements UserAcces
+ sUseCase {
+@Inject
+UserAccessOutputPort userAccessOutputPort;
+@Override
+public String createAccount(User user) throws
+Exception {
+ user.isEmailAlreadyUsed
+ (userAccessOutputPort.findByEmail
+ (user.getEmail()));
+ userAccessOutputPort.persist(user);
+ return "User successfully created";
+}
+@Override
+public String login(User user) {
+ return
+ user.login(
+ userAccessOutputPort
+ .findByEmail(user.getEmail()));
+ }
+}
+
+UserAccessInputPort implementa a interface UserAccessUseCase . Observe que estamos
+injetando UserAccessOutputPort. É por meio dessa porta de saída que a porta de entrada
+manipulará dados externos. O método createAccount verifica se o e-mail já existe, confiando
+na lógica fornecida pelo método isEmailAlreadyUsed do User classe de entidade de domínio. O método de login também depende do hexágono Domain chamando
+o método de login presente na classe de entidade de domínio User.
+
+O hexágono Application nos permitiu expressar como o sistema deve manipular dados externos em
+conjunto com a lógica do sistema central do hexágono Domain. Ao contrário do que fizemos na
+abordagem de arquitetura em camadas, a lógica do sistema central e a manipulação de dados externos
+foram definidas sem especificar se os dados estão vindo de um banco de dados ou de outro lugar.
+
+Essa abordagem de expressar, por meio de portas de saída, quais dados o sistema precisa sem expor
+como o sistema obterá esses dados é uma diferença significativa entre a arquitetura em camadas e a hexagonal.
+
+
