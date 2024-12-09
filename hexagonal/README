@@ -1,0 +1,85 @@
+Refatorando uma aplicação de arquitetura em camadas
+em uma hexagonal
+
+Agora, temos uma ideia de como implementar uma aplicação de arquitetura em camadas. Vamos refatorar
+esta aplicação que acabamos de desenvolver em uma hexagonal. Este exercício destacará as diferenças
+significativas entre as duas arquiteturas.
+
+========================
+Implementando o hexágono de domínio
+
+O hexágono de domínio contém dados e comportamentos com lógica de sistema central. Nas etapas a seguir,
+veja como refatorar alguns dados e comportamentos da aplicação em camadas usando a abordagem hexagonal:
+
+1. Ao usar a arquitetura em camadas, começamos a desenvolver o sistema implementando a camada de
+dados. Vamos refatorá-lo em um hexágono de Domínio contendo apenas uma classe de entidade de domínio de Usuário:
+
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
+public class User {
+ private Long id;
+ @NonNull
+ private String email;
+ @NonNull
+ private String password;
+ public User(Long id, String email, String
+ password) {
+ this.id = id;
+ this.email = email;
+ this.password = password;
+ }
+ /** Code omitted **/
+}
+
+A principal diferença é que essa entidade não é um ORM usado para mapear entidades de banco de dados. Essa
+entidade é um POJO que contém não apenas dados, mas também comportamentos. Vamos implementar esses comportamentos.
+
+2. Na classe de entidade Usuário , implementamos o método isEmailAlreadyUsed:
+
+public void isEmailAlreadyUsed(Optional<User> op
+ tionalUser) throws Exception {
+ if(optionalUser.isPresent()) {
+ throw new Exception(
+ "Email address already exist");
+ }
+}
+
+isEmailAlreadyUsed recebe um parâmetro Optional<User> . Se o valor estiver presente,
+então lançamos uma exceção.
+
+3. Para finalizar a implementação da classe de entidade User , criamos o login e
+Métodos isPasswordValid:
+
+public String login(Optional<User> optionalUser) {
+ if (optionalUser.isPresent()) {
+ var user = optionalUser.get();
+ var isThePasswordValid =
+ isThePasswordValid(user);
+ if (isThePasswordValid) {
+ return "Authenticated with success";
+ } else {
+ return "Invalid credentials";
+ }
+ } else {
+  return "Invalid credentials";
+  }
+ }
+ private boolean isThePasswordValid(User user) {
+  return user.getPassword().equals(this.password);
+ }
+
+ A lógica é semelhante aos métodos que implementamos no aplicativo em camadas, mas em vez de usar
+ uma classe UserDto , operamos diretamente na classe de entidade de domínio User.
+
+ Seguindo uma abordagem DDD, empurramos a lógica da Camada de Serviço para o hexágono de
+ Domínio no aplicativo hexagonal. Métodos contendo lógica de sistema central que costumavam estar na
+ camada de serviço agora fazem parte da classe de entidade de domínio Usuário no hexágono de Domínio.
+
+ A diferença significativa aqui é que o hexágono de Domínio não depende de nada. Em
+ Criar uma conta e poder efetuar login são os dois casos de uso suportados pelo nosso aplicativo.
+ Em contraste, na abordagem de arquitetura em camadas, a camada de serviço que contém a lógica do
+ sistema central depende da camada de dados.
+
+ 
