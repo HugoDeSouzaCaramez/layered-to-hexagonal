@@ -1,2 +1,175 @@
 mvn archetype:generate -D groupId=dev.hugodesouzacaramez -D artifactId=layered -D archetypeArtifactId=maven-archetype-quickstart -D interactiveMode=false
 
+COMPARANDO ARQUITETURA HEXAGONAL COM ARQUITETURA EM CAMADAS
+
+Arquitetura hexagonal é apenas uma das várias abordagens de arquitetura de software. Entre essas
+abordagens, uma que se destaca é a chamada arquitetura em camadas, que tem sido amplamente
+usada no desenvolvimento de software empresarial por anos. Sua vasta adoção se deve ao fato de ser
+razoavelmente simples aplicar os princípios da arquitetura em camadas e também porque esse é um
+dos padrões que podem surgir naturalmente quando não há uma decisão consciente sobre qual abordagem arquitetônica usar para um novo projeto.
+
+Entendendo a arquitetura em camadas e estando ciente de suas diferenças ao compará-la com a hexagonal
+arquitetura é boa para nos ajudar a tomar decisões mais informadas sobre qual abordagem de arquitetura
+de software usar ao iniciar ou refatorar um projeto de software. É por isso que neste capítulo,
+começaremos revisando ideias de arquitetura em camadas. Então, com base nessas ideias,
+implementaremos um aplicativo simples para aprender como aplicar os conceitos de arquitetura em
+camadas. Em seguida, prosseguiremos refatorando esse aplicativo simples usando ideias de arquitetura
+hexagonal para que possamos entender melhor os contrastes entre as duas arquiteturas. Finalmente,
+terminaremos avaliando as vantagens e desvantagens das arquiteturas hexagonal e em camadas.
+
+Os seguintes tópicos serão abordados neste capítulo:
+
+• Revisando a arquitetura em camadas
+• Criação de uma aplicação utilizando a arquitetura em camadas
+• Reescrever uma aplicação de arquitetura em camadas em uma hexagonal
+• Avaliar os benefícios e desvantagens das arquiteturas hexagonais e em camadas
+
+Ao final deste capítulo, você entenderá a diferença entre arquitetura em camadas e hexagonal, o que lhe
+permitirá tomar decisões melhores e mais informadas sobre seu próximo projeto de software.
+
+============================
+Revisando a arquitetura em camadas
+
+Arquitetura em camadas, na minha opinião, pode surgir quando um grupo de desenvolvedores responsáveis
+por um projeto não para para pensar sobre qual tipo de arquitetura é mais adequado para o software que eles querem desenvolver.
+Observei esse cenário em projetos onde, sem planejamento consciente da equipe, a estrutura do
+código evoluiria para algum nível de separação de preocupações, onde o código de apresentação/API
+ficaria um tanto isolado do código de negócios e infraestrutura. Você não veria a lógica de negócios
+principal nas classes responsáveis por fornecer um ponto de extremidade REST, por exemplo. Você
+pode notar, em tais projetos, pacotes chamados modelo, repositório, serviço e controlador como dicas
+para um sistema com base nas ideias de arquitetura em camadas. Eles são dicas porque cada um
+desses pacotes geralmente representa uma intenção de alocar uma responsabilidade de software
+específica. O código presente no pacote modelo é usado para representar entidades de banco de dados.
+O pacote repositório contém classes que mostram que tipo de operações de banco de dados o sistema
+pode fazer com base nas entidades modelo. serviço é um pacote onde alguma lógica de negócios é
+executada sobre os dados recuperados do banco de dados usando classes do pacote repositório .
+Finalmente, o pacote controlador contém classes que expõem endpoints de API para permitir o acionamento de um
+dos comportamentos suportados pela aplicação.
+
+Como uma forma de arquitetura em camadas, podemos ver a estrutura do código com base nos
+pacotes modelo, repositório, serviço e controlador . Cada pacote representa uma camada com sua
+responsabilidade que depende diretamente do código do pacote/camada que vem a seguir ou está
+abaixo dele. O controlador depende do serviço, que depende do repositório, que depende do modelo.
+Não é incomum ver pequenas variações desse padrão onde mais camadas são introduzidas, embora
+a ideia geral de dependência descendente está sempre lá. Pode até haver situações em que uma
+camada ignora a próxima camada e depende das classes de outra camada. Podemos ver como um
+aplicativo backend baseado em arquitetura em camadas é geralmente estruturado na figura a seguir:
+
+Em vez de uma camada de apresentação, o que faria sentido se estivéssemos desenvolvendo um aplicativo
+da web, temos a camada de API contendo classes com lógica de endpoint REST. Essas classes são
+responsáveis por receber a solicitação do cliente e disparar algum comportamento do aplicativo na camada
+de serviço. Essa camada geralmente contém lógica de negócios que depende de dados externos. Para
+lidar com dados externos, temos a camada de dados contendo classes responsáveis por obter, persistir e
+mapear dados externos. Não uso o termo persistência aqui para evitar implicar que a fonte de dados será
+um banco de dados. Os dados podem vir de qualquer lugar, incluindo um banco de dados.
+
+Eu vi esse padrão sendo empregado em alguns projetos de desenvolvimento de software em grandes
+empresas e start-ups. Curiosamente, se você perguntar aos desenvolvedores envolvidos no projeto qual
+arquitetura eles usaram, eles provavelmente diriam que nenhuma arquitetura específica foi aplicada,
+mesmo que seu código sugira que o software foi desenvolvido com base na arquitetura em camadas.
+
+Como a arquitetura em camadas existe há muitos anos, ela se tornou uma arquitetura padrão
+para projetos de software corporativo. A ideia de segregar responsabilidades com base em componentes de sistemas de alto nível
+ parecem acomodar uma boa parte das necessidades que vemos em software empresarial,
+geralmente porque esse tipo de software segue, na maioria das vezes, o mesmo padrão de receber entrada,
+obter dados de algum lugar, executar processamento de dados e, em seguida, persistir ou enviar esses
+dados para outro sistema. Dado que muitos aplicativos empresariais são desenvolvidos seguindo esse
+padrão, o que muda significativamente entre esses aplicativos é a parte de processamento de dados que
+contém as regras de negócios específicas para um determinado aplicativo. As outras partes também podem mudar, mas não tão consideravelmente
+APIs são expostas e como os dados são recuperados/persistidos podem ser padronizados em diferentes aplicativos da mesma
+organização, especialmente quando a mesma equipe mantém esses aplicativos.
+
+Embora a arquitetura em camadas ajude a fornecer algum nível de desacoplamento, ela não evita
+inteiramente situações em que mudanças em uma camada também podem exigir mudanças em outra. Quando você tem a camada de negócio/serviço
+dependendo da camada de persistência, mudanças na última podem impactar a primeira. A seguir,
+compartilharei uma experiência usando a arquitetura em camadas.
+
+Lembro-me de uma situação em que a equipe com a qual eu estava trabalhando decidiu mudar a tecnologia do banco
+de dados no meio do projeto. Durante a implementação, descobriu-se que um recurso ORM disponível para a
+tecnologia de banco de dados anterior não estava disponível para o novo banco de dados. O problema era que o
+sistema tinha algumas regras de negócios que dependiam diretamente desse recurso ausente do novo banco de dados.
+Por fim, tivemos que ajustar nossa abordagem mudando significativamente como essas regras de negócios
+seriam processadas. Este aplicativo, em particular, evoluiu sem uma discussão em equipe sobre quais
+princípios arquitetônicos deveriam ter sido seguidos. Eventualmente, o projeto evoluiu para algo com
+características de arquitetura em camadas.
+
+Para entender melhor a arquitetura em camadas, vamos desenvolver um aplicativo baseado nessa ideia de arquitetura.
+
+=======================================================
+Criando um aplicativo usando a arquitetura em camadas
+
+Na seção anterior, vimos como um aplicativo backend baseado em arquitetura em camadas
+pode ser estruturado. Nosso exemplo tem três camadas: API, serviço e dados. Seguindo essa estrutura, iremos
+desenvolver um aplicativo de usuário simples que permita o registro e login do usuário. Implementaremos a camada
+de dados, depois prosseguiremos para a camada de serviço e, então, para a camada de API. O aplicativo será baseado
+no Quarkus, então podemos confiar no framework para fornecer endpoints REST e conectar a um banco de dados.
+
+================================
+Implementando a camada de dados
+
+A camada de dados é responsável por permitir obter, persistir e mapear dados externos. Contamos com um banco de
+dados para o aplicativo do usuário armazenar informações do usuário:
+
+1. Então, vamos começar preparando o Quarkus para que possamos usar um banco de dados H2 na memória:
+
+quarkus.datasource.db-kind=h2
+quarkus.datasource.jdbc.url=jdbc:h2:mem:default;DB_CLO
+SE_DELAY=-1.;NON_KEYWORDS=user
+quarkus.hibernate-orm.database.generation=drop-and-create
+
+A propriedade quarkus.datasource.db-kind diz ao Quarkus para usar o driver H2.
+quarkus.datasource.jdbc.url configura um banco de dados na memória que ficará ativo
+enquanto o aplicativo estiver em execução. Por fim, definimos quarkus.hibernateorm.database. generation para permitir a criação automática do banco de dados na inicialização do aplicativo.
+
+2. No pacote dev.hugodesouzacaramez.layered.data.entity , criamos o ORM da classe de entidade usuário:
+
+package dev.hugodesouzacaramez.layered.data.entity;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import lombok.*;
+@Entity
+@Getter
+@Setter
+@RequiredArgsConstructor
+@NoArgsConstructor
+public class User {
+ @Id
+ @GeneratedValue(strategy =
+ GenerationType.IDENTITY)
+ private Long id;
+ @NonNull
+ private String email;
+ @NonNull
+ private String password;
+}
+
+Usuário é uma entidade ORM porque a anotação @Entity do Jakarta é colocada no topo da classe.
+O atributo id é anotado com @GeneratedValue, então o banco de dados subjacente
+gera o valor id . Concluímos a implementação com os atributos de e-mail e senha
+necessários para o registro e login de novos usuários.
+
+3. No pacote dev.hugodesouzacaramez.layered.data.repository , criamos a classe UserRepository:
+
+package dev.hugodesouzacaramez.layered.data.repository;
+import dev.hugodesouzacaramez.layered.data.entity.User;
+import io.quarkus.hibernate.orm.
+ panache.PanacheRepository;
+import jakarta.enterprise.context.ApplicationScoped;
+import java.util.Optional;
+@ApplicationScoped
+public class UserRepository implements PanacheReposi
+ tory<User> {
+ public Optional<User> findByEmail(String email) {
+ return find("email",
+ email).firstResultOptional();
+ }
+}
+
+Ao implementar o PanacheRepository, obtemos operações de banco de dados padrão
+predefinidas para permitir buscar, salvar e excluir dados. Além dessas operações
+predefinidas, criamos findByEmail para pesquisar entidades User usando o endereço de email. Se nenhum dado for encontrado, ele retorna um Optional vazio.
+
+A entidade User e o repositório compreendem a camada de dados, permitindo-nos persistir e recuperar dados do
+usuário de um banco de dados. Vamos agora implementar a camada de serviço.
