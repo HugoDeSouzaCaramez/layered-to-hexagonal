@@ -292,3 +292,53 @@ executar testes mais restritos sem dependências de recursos externos.
 Com base em nossa implementação do mesmo aplicativo usando arquitetura em camadas e hexagonal,
 vamos avaliar os prós e contras de cada arquitetura.
 
+========================================
+Avaliação dos benefícios e desvantagens das arquiteturas hexagonais e em camadas
+
+A estrutura de um aplicativo em camadas é mais direta do que uma hexagonal. Na abordagem em
+camadas, temos a camada de serviço dependendo diretamente da camada de dados. Essa dependência
+implica que a lógica do sistema central depende da entidade ORM e das classes de repositório da
+camada de dados. Ao contrário da abordagem hexagonal, não há abstração em relação ao acesso a
+dados externos, e a lógica do sistema central é incorporada com código que manipula dados externos.
+Isso é bom ou ruim? Como a maioria das coisas no desenvolvimento de software, depende do seu contexto.
+
+A experiência que compartilhei no início do capítulo, onde minha equipe teve que mudar a tecnologia do
+banco de dados no meio do projeto, é um exemplo em que empregar a abordagem hexagonal teria sido
+benéfico. Se você espera mudanças consideráveis de requisitos em seu projeto, então a abordagem
+hexagonal pode ser uma boa ideia para tornar mais fácil para seu aplicativo acomodar essas mudanças.
+Caso contrário, a arquitetura em camadas é uma boa escolha, dado que é rápido inicializar um novo aplicativo
+com tal arquitetura.
+
+A arquitetura em camadas fornece uma abordagem simples e rápida para desenvolver novos aplicativos. A
+maioria dos desenvolvedores de backend está familiarizada com uma camada de API para expor endpoints,
+uma camada de serviço contendo lógica do sistema central e a camada de dados geralmente fornecendo
+acesso ao banco de dados. Então, é uma tarefa pequena integrar novos membros da equipe para manter
+aplicativos baseados nessa arquitetura. A desvantagem é que essa arquitetura oferece menos flexibilidade quando os componentes d
+
+Por outro lado, a arquitetura hexagonal nos permite desacoplar o código lógico do sistema central do código
+de infraestrutura/manipulação de dados externos. Ainda assim, esse desacoplamento não vem de graça. A
+arquitetura hexagonal aumenta ligeiramente a complexidade do código devido a componentes adicionais,
+como portas, casos de uso e adaptadores que usamos para garantir o desacoplamento. O principal benefício
+é um aplicativo tolerante a mudanças protegido da imprevisibilidade de requisitos de sistema inesperados.
+A integração de novos membros da equipe pode representar um esforço adicional porque a arquitetura
+hexagonal é menos amplamente usada do que sua contraparte em camadas. Portanto, as pessoas precisam
+de mais tempo para entender as ideias da abordagem hexagonal para começar a contribuir com o projeto.
+
+====================================
+Resumo
+
+Este capítulo explorou a arquitetura em camadas e suas diferenças da arquitetura hexagonal.
+Começamos revisando o propósito da arquitetura em camadas para fornecer algum nível de
+separação de preocupações por meio de camadas lógicas contendo código com responsabilidades
+específicas. Depois de revisar a ideia da abordagem em camadas, sujamos nossas mãos
+implementando um aplicativo de acesso de usuário simples do zero contendo as camadas de API,
+serviço e dados. Para destacar as diferenças entre as arquiteturas em camadas e hexagonal,
+refatoramos o aplicativo de acesso de usuário para usar a abordagem hexagonal. Ao fazer isso, vimos que a arquitetura
+
+mudanças, como aquelas que afetam componentes de infraestrutura, como o tratamento de acesso a dados externos.
+Por fim, avaliamos as vantagens e desvantagens das arquiteturas em camadas e hexagonais,
+concluindo que a em camadas é uma boa escolha quando não há mudanças significativas nos requisitos do projeto
+esperado, e a arquitetura hexagonal é recomendada quando se precisa de uma aplicação mais tolerável a mudanças,
+capaz de acomodar mudanças consideráveis no sistema, especialmente no nível de infraestrutura.
+No próximo capítulo, exploraremos como os princípios SOLID podem ser usados com arquitetura hexagonal.
+
